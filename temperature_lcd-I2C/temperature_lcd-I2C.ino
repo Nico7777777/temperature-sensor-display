@@ -2,9 +2,10 @@
 #include <DHT.h>
 
 LiquidCrystal_I2C lcd(0x27,16, 2);  // set the LCD address to 0x27 for a 16 chars and 2 line display
-float tempCelsius, tempFarenheit;  // the 2 temperature values
+float tempCelsius, tempFarenheit, humidity;  // the 2 temperature values
 const int tempPin = 5;  // the analog pin reading from DHT-11. It holds values within the range of 0-255, thus it must be capable of PWD
 DHT dht(tempPin, DHT11);
+bool firstBoot = true, tura = true;
 byte degree[] = {
   B01110,   // this is a grid
   B01010,   // with 5 columns
@@ -35,13 +36,25 @@ void loop()
 { 
   tempCelsius = dht.readTemperature();
   tempFarenheit = dht.readTemperature(true);
-  
+  humidity = dht.readHumidity();
+  if(firstBoot){
+    delay(800);
+    firstBoot = false;
+  }
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("temperature = ");
-  lcd.setCursor(0, 1);
-  print_temp(tempCelsius, 'C');
-  lcd.print(" / ");
-  print_temp(tempFarenheit, 'F');
+  
+  if(tura){
+    lcd.print("temperature = ");
+    lcd.setCursor(0, 1);
+    print_temp(tempCelsius, 'C');
+    lcd.print(" / ");
+    print_temp(tempFarenheit, 'F');
+  }else{
+    lcd.print("umiditate = ");
+    lcd.setCursor(0, 1);
+    print_temp(humidity, '%');
+  }
+  tura = !tura;
   delay(2000);
 }
